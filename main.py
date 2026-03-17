@@ -74,7 +74,6 @@ icon_path = resource_path("icon.svg")
 
 
 # gui
-customtkinter.set_default_color_theme("./theme.json")
 app = customtkinter.CTk()
 app.title("Close app")
 app.geometry("300x150")
