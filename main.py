@@ -1,11 +1,20 @@
 import customtkinter
 from tkinter import messagebox
 import subprocess
+import sys
+import os
 
 
-shutdown_active = False
+# function for svg icon
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 
+# function for shutting down
 def shutdown_command(minutes, hours):
     global shutdown_active
     minutes = int(minutes) if minutes.strip() else 0
@@ -23,46 +32,48 @@ def shutdown_command(minutes, hours):
     return print(result.stdout)
 
 
+# function for showing info about shutting down
 def show_info(minutes, hours):
-    if shutdown_active:
-        messagebox.showinfo(
-            "Info", f"Computer will shut down in {hours} hours and {minutes} minutes."
-        ) if hours.strip() else messagebox.showinfo(
-            "Info", f"Computer will shut down in {minutes} minutes."
-        )
-    else:
-        messagebox.showerror("Info", "There is nothing to cancel.")
+    messagebox.showinfo(
+        "Info", f"Computer will shut down in {hours} hours and {minutes} minutes."
+    ) if hours.strip() else messagebox.showinfo(
+        "Info", f"Computer will shut down in {minutes} minutes."
+    )
 
 
+# combining these two above functions
 def shutdown(minutes, hours):
     shutdown_command(minutes, hours)
     show_info(minutes, hours)
 
 
+# cancelling shutdown
 def cancel_shutdown_command():
-    if shutdown_active:
-        result = subprocess.run(
-            "shutdown /a",
-            capture_output=True,
-            text=True,
-            encoding="cp850",
-        )
-        print(result.stdout)
-        button_cancel.configure(state="disabled", fg_color="gray")
-
-    else:
-        return None
+    result = subprocess.run(
+        "shutdown /a",
+        capture_output=True,
+        text=True,
+        encoding="cp850",
+    )
+    print(result.stdout)
+    button_cancel.configure(state="disabled", fg_color="gray")
 
 
+# showing info about cancelled shutdwon
 def show_info_cancelled():
     messagebox.showinfo("Info", "Shutdown cancelled.")
 
 
+# combining these two above functions
 def cancel_shutdown():
     cancel_shutdown_command()
     show_info_cancelled()
 
 
+icon_path = resource_path("icon.svg")
+
+
+# gui
 customtkinter.set_default_color_theme("./theme.json")
 app = customtkinter.CTk()
 app.title("Close app")
